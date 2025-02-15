@@ -22,7 +22,8 @@ class AuthTest extends TestCase
         $response = $this->post('api/v1/register', [
             'name' => 'Arsh',
             'email' => 'mohammedarsh75@gmail.com',
-            'password' => Hash::make('password'),
+            'password' => 'password',
+            'password_confirmation' => 'password',
         ]);
 
         $response->assertStatus(201);
