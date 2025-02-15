@@ -209,6 +209,11 @@
                         "type": "string",
                         "example": "password"
                     },
+                    "password_confirmation": {
+                        "description": "Password Confirmation",
+                        "type": "string",
+                        "example": "password"
+                    },
                     "status": {
                         "type": "boolean",
                         "example": true

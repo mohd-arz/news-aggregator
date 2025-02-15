@@ -30,7 +30,14 @@ use Illuminate\Http\Exceptions\HttpResponseException;
  *          type="string",
  *          description="Password of the User",
  *          example="password"
- *      )
+ *      ),
+ *      @OA\Property(
+ *         property="password_confirmation",
+ *          type="string",
+ *          description="Password Confirmation",
+ *          example="password"
+ *   )
+ * 
  * )
  */
 class RegisterRequest extends FormRequest
@@ -52,9 +59,9 @@ class RegisterRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required',
-            'email' => 'required|unique:users,email',
-            'password' => 'required|min:8'
+            'name' => 'required|string',
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required|min:8|confirmed'
         ];
     }
     public function failedValidation(Validator $validator)
