@@ -48,6 +48,9 @@ class NewsAggregatorService
       if ($news['status'] !== 'ok') {
         continue;
       }
+      if(!isset($news['articles'])){
+        continue;
+      }
       $articles = $news['articles'];
       foreach ($articles as $data) {
         $this->saveNews($data, $provider);

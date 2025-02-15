@@ -14,6 +14,12 @@ Route::controller(AuthController::class)->group(function(){
 
 Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('/logout',[AuthController::class,'logout']);
+
+
+    // News Routes
+    Route::controller(NewsController::class)->group(function(){
+        Route::get('/news','getAllNews');
+    });
 });
     
 
