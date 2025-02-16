@@ -2,6 +2,7 @@
 
 namespace App\Services\Api;
 
+use App\Jobs\ProcessNews;
 use App\Models\Author;
 use App\Models\Category;
 use App\Models\News;
@@ -52,44 +53,7 @@ class NewsAggregatorService
         continue;
       }
       $articles = $news['articles'];
-      foreach ($articles as $data) {
-        $this->saveNews($data, $provider);
-      }
-    }
-  }
-
-  /**
-   * Summary of saveNews
-   * Save news in database
-   * @param mixed $data
-   * @param string $provider
-   * @return void
-   */
-  private function saveNews($data, $provider): void
-  {
-    try {
-      DB::beginTransaction();
-      $category = Category::firstOrCreate(['name' => $data['category'] ?? 'General']);
-      $author = Author::firstOrCreate(['name' => $data['author'] ?? 'Unknown']);
-      $source = Source::firstOrCreate(['name' => $data['source'] ?? 'Unknown']);
-      News::updateOrCreate(
-        ['url' => $data['url']],
-        [
-          'source_id' => $source->id,
-          'title' => $data['title'],
-          'description' => $data['description'],
-          'url' => $data['url'],
-          'image_url' => $data['urlToImage'],
-          'published_at' => Carbon::parse($data['publishedAt'])->toDateTimeString(),
-          'category_id' => $category->id,
-          'author_id' => $author->id,
-          'providers' => $provider
-        ]
-      );
-      DB::commit();
-    } catch (\Exception $e) {
-      info($e);
-      DB::rollBack();
+      ProcessNews::dispatch($articles,$provider);
     }
   }
 }
