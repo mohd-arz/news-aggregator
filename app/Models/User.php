@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
@@ -44,5 +45,20 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    //preference name should be (type) + Preferences
+    public function sourcePreferences()
+    {
+        return $this->morphedByMany(Source::class, 'preferable', 'user_preferences');
+    }
+    
+    public function categoryPreferences()
+    {
+        return $this->morphedByMany(Category::class, 'preferable', 'user_preferences');
+    }
+    public function authorPreferences()
+    {
+        return $this->morphedByMany(Author::class, 'preferable', 'user_preferences');
     }
 }

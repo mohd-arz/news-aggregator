@@ -21,6 +21,7 @@ class NewsController extends Controller
      *     tags={"News"},
      *     summary="Get All News",
      *     description="Get all news from the database",
+     *     security={{"sanctum": {}}},
      *     @OA\Parameter(
      *         name="page",
      *         in="query",

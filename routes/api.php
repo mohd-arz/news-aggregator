@@ -1,7 +1,9 @@
 <?php
 
 use App\Http\Controllers\Api\V1\AuthController;
+use App\Http\Controllers\Api\V1\DropDownController;
 use App\Http\Controllers\Api\V1\NewsController;
+use App\Http\Controllers\Api\V1\PreferencesController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -19,6 +21,19 @@ Route::middleware(['auth:sanctum'])->group(function () {
     // News Routes
     Route::controller(NewsController::class)->group(function(){
         Route::get('/news','getAllNews');
+    });
+
+    //Preferences Routes
+    Route::controller(PreferencesController::class)->group(function(){
+        Route::get('/preferences','getPreferences');
+        Route::post('/preferences','setPreferences');
+    });
+
+    //DropDown Routes
+    Route::prefix('dropdown')->controller(DropDownController::class)->group(function(){
+        Route::get('/categories','getCategories');
+        Route::get('/sources','getSources');
+        Route::get('/authors','getAuthors');
     });
 });
     
