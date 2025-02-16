@@ -304,7 +304,75 @@
                                         "data": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/components/schemas/GetAllNewsResource"
+                                                "$ref": "#/components/schemas/NewsResource"
+                                            }
+                                        },
+                                        "pagination": {
+                                            "$ref": "#/components/schemas/Pagination"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Something went wrong",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/for-you": {
+            "get": {
+                "tags": [
+                    "News"
+                ],
+                "summary": "Get News For You",
+                "description": "Get prefferenced news from the database",
+                "operationId": "getForYou",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Page number",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "description": "Number of items per page",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "News Fetched Successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/NewsResource"
                                             }
                                         },
                                         "pagination": {
@@ -576,9 +644,9 @@
                 },
                 "type": "object"
             },
-            "GetAllNewsResource": {
-                "title": "GetAllNewsResource",
-                "description": "Get All News Resource",
+            "NewsResource": {
+                "title": "NewsResource",
+                "description": "News Resource",
                 "properties": {
                     "id": {
                         "description": "ID of the News",

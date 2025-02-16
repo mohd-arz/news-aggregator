@@ -7,8 +7,8 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
  * @OA\Schema(
- *      title="GetAllNewsResource",
- *      description="Get All News Resource",
+ *      title="NewsResource",
+ *      description="News Resource",
  *      type="object",
  *      @OA\Property(
  *          property="id",
@@ -60,7 +60,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
  *      )
  * )
  */
-class GetAllNewsResource extends JsonResource
+class NewsResource extends JsonResource
 {
     /**
      * Transform the resource into an array.

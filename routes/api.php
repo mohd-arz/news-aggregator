@@ -21,6 +21,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     // News Routes
     Route::controller(NewsController::class)->group(function(){
         Route::get('/news','getAllNews');
+        Route::get('/for-you','ForYou');
     });
 
     //Preferences Routes

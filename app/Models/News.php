@@ -15,4 +15,8 @@ class News extends Model
     {
         return $this->belongsTo(Source::class);
     }
+    public function author()
+    {
+        return $this->belongsTo(Author::class);
+    }
 }
