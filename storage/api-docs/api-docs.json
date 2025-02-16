@@ -161,6 +161,111 @@
                 ]
             }
         },
+        "/api/v1/dropdown/categories": {
+            "get": {
+                "tags": [
+                    "DropDown"
+                ],
+                "summary": "Get Categories",
+                "description": "Get Categories",
+                "operationId": "getCategories",
+                "responses": {
+                    "200": {
+                        "description": "Categories",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/CategoryResource"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/dropdown/sources": {
+            "get": {
+                "tags": [
+                    "DropDown"
+                ],
+                "summary": "Get Sources",
+                "description": "Get Sources",
+                "operationId": "getSources",
+                "responses": {
+                    "200": {
+                        "description": "Sources",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/SourceResource"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/dropdown/authors": {
+            "get": {
+                "tags": [
+                    "DropDown"
+                ],
+                "summary": "Get Authors",
+                "description": "Get Authors",
+                "operationId": "getAuthors",
+                "responses": {
+                    "200": {
+                        "description": "Authors",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/AuthorResource"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
         "/news": {
             "get": {
                 "tags": [
@@ -221,7 +326,87 @@
                             }
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/preferences/set": {
+            "post": {
+                "tags": [
+                    "Preferences"
+                ],
+                "summary": "Set Preferences",
+                "description": "Set Preferences",
+                "operationId": "setPreferences",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/SetPreferenceRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Preferences set successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Preferences set successfully"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/preferences/get": {
+            "get": {
+                "tags": [
+                    "Preferences"
+                ],
+                "summary": "Get Preferences",
+                "description": "Get Preferences",
+                "operationId": "getPreferences",
+                "responses": {
+                    "200": {
+                        "description": "Preferences",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/GetPreferenceResource"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
             }
         }
     },
@@ -284,6 +469,40 @@
                 },
                 "type": "object"
             },
+            "SetPreferenceRequest": {
+                "title": "SetPreferenceRequest",
+                "description": "Request body for setting user preferences",
+                "required": [
+                    "preference_name",
+                    "value"
+                ],
+                "properties": {
+                    "preference_name": {
+                        "description": "Array of preference names",
+                        "type": "array",
+                        "items": {
+                            "type": "string",
+                            "example": "source"
+                        }
+                    },
+                    "value": {
+                        "description": "Object containing preference values grouped by preference name",
+                        "type": "object",
+                        "additionalProperties": {
+                            "type": "array",
+                            "items": {
+                                "type": "integer",
+                                "example": 1
+                            }
+                        }
+                    },
+                    "status": {
+                        "type": "boolean",
+                        "example": true
+                    }
+                },
+                "type": "object"
+            },
             "UserResource": {
                 "title": "UserResource",
                 "description": "User Resource",
@@ -302,6 +521,57 @@
                         "description": "Email of the User",
                         "type": "string",
                         "example": "john.doe@example.com"
+                    }
+                },
+                "type": "object"
+            },
+            "AuthorResource": {
+                "title": "AuthorResource",
+                "description": "Author Resource",
+                "properties": {
+                    "id": {
+                        "description": "ID of the Author",
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "name": {
+                        "description": "Name of the Author",
+                        "type": "string",
+                        "example": "John Doe"
+                    }
+                },
+                "type": "object"
+            },
+            "CategoryResource": {
+                "title": "CategoryResource",
+                "description": "Category Resource",
+                "properties": {
+                    "id": {
+                        "description": "ID of the Category",
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "name": {
+                        "description": "Name of the Category",
+                        "type": "string",
+                        "example": "General"
+                    }
+                },
+                "type": "object"
+            },
+            "SourceResource": {
+                "title": "SourceResource",
+                "description": "Source Resource",
+                "properties": {
+                    "id": {
+                        "description": "ID of the Source",
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "name": {
+                        "description": "Name of the Source",
+                        "type": "string",
+                        "example": "BBC News"
                     }
                 },
                 "type": "object"
@@ -349,6 +619,85 @@
                         "description": "Published At of the News",
                         "type": "string",
                         "example": "2021-01-01 00:00:00"
+                    }
+                },
+                "type": "object"
+            },
+            "UserAuthorResource": {
+                "title": "AuthorResource",
+                "description": "Author Resource",
+                "properties": {
+                    "id": {
+                        "description": "ID of the Author",
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "name": {
+                        "description": "Name of the Author",
+                        "type": "string",
+                        "example": "John Doe"
+                    }
+                },
+                "type": "object"
+            },
+            "UserCategoryResource": {
+                "title": "CategoryResource",
+                "description": "Category Resource",
+                "properties": {
+                    "id": {
+                        "description": "ID of the Category",
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "name": {
+                        "description": "Name of the Category",
+                        "type": "string",
+                        "example": "Technology"
+                    }
+                },
+                "type": "object"
+            },
+            "GetPreferenceResource": {
+                "title": "GetPreferenceResource",
+                "description": "Preference Resource",
+                "properties": {
+                    "categories": {
+                        "description": "Categories of the User",
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/UserCategoryResource"
+                        }
+                    },
+                    "sources": {
+                        "description": "Sources of the User",
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/UserSourceResource"
+                        }
+                    },
+                    "authors": {
+                        "description": "Authors of the User",
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/UserAuthorResource"
+                        }
+                    }
+                },
+                "type": "object"
+            },
+            "UserSourceResource": {
+                "title": "SourceResource",
+                "description": "Source Resource",
+                "properties": {
+                    "id": {
+                        "description": "ID of the Source",
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "name": {
+                        "description": "Name of the Source",
+                        "type": "string",
+                        "example": "BBC"
                     }
                 },
                 "type": "object"
@@ -444,8 +793,16 @@
             "description": "Auth"
         },
         {
+            "name": "DropDown",
+            "description": "DropDown"
+        },
+        {
             "name": "News",
             "description": "News"
+        },
+        {
+            "name": "Preferences",
+            "description": "Preferences"
         }
     ],
     "security": [
