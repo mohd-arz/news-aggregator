@@ -9,6 +9,7 @@ use App\Models\News;
 use App\Models\Source;
 use App\Services\Api\NewsStrategy\GuardianApiService;
 use App\Services\Api\NewsStrategy\NewsApiService;
+use App\Services\Api\NewsStrategy\NYTApiService;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
@@ -20,6 +21,7 @@ class NewsAggregatorService
     $this->apiStrategies = [
       'newsapi' => new NewsApiService(),
       'guardian' => new GuardianApiService(),
+      'nyt' => new NYTApiService(),
     ];
   }
 
