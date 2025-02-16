@@ -22,7 +22,7 @@ class ProcessNews implements ShouldQueue
     /**
      * Create a new job instance.
      */
-    public function __construct($articles,$provider)
+    public function __construct($articles, $provider)
     {
         $this->articles = $articles;
         $this->provider = $provider;
@@ -35,42 +35,48 @@ class ProcessNews implements ShouldQueue
     {
         foreach ($this->articles as $data) {
             $this->saveNews($data);
-          }
+        }
     }
 
     /**
-   * Summary of saveNews
-   * Save news in database
-   * @param mixed $data
-   * @return void
-   */
-  private function saveNews($data): void
-  {
-    try {
-      DB::beginTransaction();
-      $category = Category::firstOrCreate(['name' => $data['category'] ?? 'General']);
-      $author = Author::firstOrCreate(['name' => $data['author'] ?? 'Unknown']);
-      $source = Source::firstOrCreate(['name' => $data['source'] ?? 'Unknown']);
-      News::updateOrCreate(
-        ['url' => $data['url']],
-        [
-          'sourceid' => $source->id,
-          'title' => $data['title'],
-          'description' => $data['description'],
-          'url' => $data['url'],
-          'image_url' => $data['urlToImage'],
-          'published_at' => Carbon::parse($data['publishedAt'])->toDateTimeString(),
-          'category_id' => $category->id,
-          'author_id' => $author->id,
-          'providers' => $this->provider
-        ]
-      );
-      DB::commit();
-    } catch (\Exception $e) {
-      info($e);
-      DB::rollBack();
-      throw $e;
-    }
-  }
+     * Summary of saveNews
+     * Save news in database
+     * @param mixed $data
+     * @return void
+     */
+    private function saveNews($data): void
+    {
+        try {
+            DB::beginTransaction();
+            $category = Category::firstOrCreate(['name' => $data['category'] ?? 'General']);
+            $author = Author::firstOrCreate(['name' => $data['author'] ?? 'Unknown']);
+            $source = Source::firstOrCreate(['name' => $data['source'] ?? 'Unknown']);
 
+            $existingNews = News::where('url', $data['url'])
+                ->orWhere('title', $data['title'])
+                ->exists();
+
+            if (!$existingNews) {
+                News::create(
+                    [
+                        'source_id' => $source->id,
+                        'title' => $data['title'],
+                        'description' => $data['description'],
+                        'body' => $data['body'],
+                        'url' => $data['url'],
+                        'image_url' => $data['urlToImage'],
+                        'published_at' => Carbon::parse($data['publishedAt'])->toDateTimeString(),
+                        'category_id' => $category->id,
+                        'author_id' => $author->id,
+                        'providers' => $this->provider
+                    ]
+                );
+            }
+            DB::commit();
+        } catch (\Exception $e) {
+            info($e);
+            DB::rollBack();
+            throw $e;
+        }
+    }
 }

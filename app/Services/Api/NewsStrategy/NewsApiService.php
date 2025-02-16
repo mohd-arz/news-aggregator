@@ -6,6 +6,7 @@ namespace App\Services\Api\NewsStrategy;
 use App\Interface\Api\NewsFetchInterface;
 use App\Trait\ResponseTrait;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Str;
 
 class NewsApiService implements NewsFetchInterface
 {
@@ -35,6 +36,7 @@ class NewsApiService implements NewsFetchInterface
         return [
             'title' => $article['title'],
             'description' => $article['description'],
+            'body' => Str::limit($article['content'] ?? '', 200),
             'url' => $article['url'] ?? null,
             'urlToImage' => $article['urlToImage'] ?? null,
             'publishedAt' => $article['publishedAt'],

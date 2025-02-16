@@ -726,6 +726,11 @@
                         "type": "string",
                         "example": "The description of the news"
                     },
+                    "body": {
+                        "description": "Body of the News",
+                        "type": "string",
+                        "example": "The body of the news"
+                    },
                     "url": {
                         "description": "URL of the News",
                         "type": "string",
@@ -772,6 +777,11 @@
                         "description": "Title of the News",
                         "type": "string",
                         "example": "The title of the news"
+                    },
+                    "description": {
+                        "description": "Description of the News",
+                        "type": "string",
+                        "example": "The description of the news"
                     },
                     "published_at": {
                         "description": "Published At of the News",

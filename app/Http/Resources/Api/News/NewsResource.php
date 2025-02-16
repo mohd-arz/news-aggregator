@@ -35,6 +35,12 @@ use Illuminate\Http\Resources\Json\JsonResource;
  *          example="The title of the news"
  *      ),
  *      @OA\Property(
+ *          property="description",
+ *          type="string",
+ *          description="Description of the News",
+ *          example="The description of the news"
+ *      ),
+ *      @OA\Property(
  *          property="published_at",
  *          type="string",
  *          description="Published At of the News",
@@ -56,6 +62,7 @@ class NewsResource extends JsonResource
             'source' => $this->source->name ?? 'Unknown',
             'category' => $this->category->name ?? 'Unknown',
             'title' => $this->title,
+            'description' => $this->description,
             'published_at' => $this->published_at,
         ];
     }

@@ -41,6 +41,12 @@ use Illuminate\Http\Resources\Json\JsonResource;
  *          description="Description of the News",
  *          example="The description of the news"
  *      ),
+ *     @OA\Property(
+ *          property="body",
+ *          type="string",
+ *          description="Body of the News",
+ *          example="The body of the news"
+ *      ),
  *      @OA\Property(
  *          property="url",
  *          type="string",
@@ -82,6 +88,7 @@ class NewsDetailsResource extends JsonResource
             'category' => $this->category->name ?? 'Unknown',
             'title' => $this->title,
             'description' => $this->description,
+            'body' => $this->body,
             'url' => $this->url,
             'author' => $this->author->name ?? 'Unknown',
             'url_to_image' => $this->url_to_image,
