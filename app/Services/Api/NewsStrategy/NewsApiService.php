@@ -58,7 +58,7 @@ class NewsApiService implements NewsFetchInterface
         "model" => "text-davinci-003",
         "query" => $text,
         "labels" => ["Business", "Sports", "Technology", "Entertainment", "Health", "Science", "Politics"],
-        "api_key" => 'config("services.openai.key")'
+        "api_key" => config('services.openai.key'),
     ]);
 
     return $response->json()['label'] ?? 'General';
