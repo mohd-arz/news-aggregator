@@ -7,8 +7,9 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
  * @OA\Schema(
- *      title="NewsResource",
- *      description="News Resource",
+ *      schema="NewsDetailsResource",
+ *      title="NewsDetailsResource",
+ *      description="News Details Resource",
  *      type="object",
  *      @OA\Property(
  *          property="id",
@@ -35,6 +36,30 @@ use Illuminate\Http\Resources\Json\JsonResource;
  *          example="The title of the news"
  *      ),
  *      @OA\Property(
+ *          property="description",
+ *          type="string",
+ *          description="Description of the News",
+ *          example="The description of the news"
+ *      ),
+ *      @OA\Property(
+ *          property="url",
+ *          type="string",
+ *          description="URL of the News",
+ *          example="https://example.com"
+ *      ),
+ *      @OA\Property(
+ *          property="author",
+ *          type="string",
+ *          description="Author of the News",
+ *          example="John Doe"
+ *      ),
+ *      @OA\Property(
+ *          property="url_to_image",
+ *          type="string",
+ *          description="URL to Image of the News",
+ *          example="https://example.com/image.jpg"
+ *      ),
+ *      @OA\Property(
  *          property="published_at",
  *          type="string",
  *          description="Published At of the News",
@@ -42,7 +67,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
  *      )
  * )
  */
-class NewsResource extends JsonResource
+class NewsDetailsResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -56,6 +81,10 @@ class NewsResource extends JsonResource
             'source' => $this->source->name ?? 'Unknown',
             'category' => $this->category->name ?? 'Unknown',
             'title' => $this->title,
+            'description' => $this->description,
+            'url' => $this->url,
+            'author' => $this->author->name ?? 'Unknown',
+            'url_to_image' => $this->url_to_image,
             'published_at' => $this->published_at,
         ];
     }

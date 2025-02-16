@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\News\GetAllNewsResource;
+use App\Http\Resources\Api\News\NewsDetailsResource;
 use App\Http\Resources\Api\News\NewsResource;
 use App\Models\News;
 use App\Services\Api\NewsStrategy\NewsApiService;
@@ -136,4 +137,38 @@ class NewsController extends Controller
         }
     }
 
+    /**
+     *  @OA\Get(
+     *     path="/news/{news}",
+     *     operationId="getNews",
+     *     tags={"News"},
+     *     summary="Get News",
+     *     description="Get a single news from the database",
+     *     security={{"sanctum": {}}},
+     *     @OA\Parameter(
+     *         name="news",
+     *         in="path",
+     *         required=true,
+     *         @OA\Schema(type="integer"),
+     *         description="ID of the news"
+     *     ),
+     *    @OA\Response(
+     *        response=200,
+     *        description="News Fetched Successfully",
+     *        @OA\JsonContent(
+     *           @OA\Property(property="data", type="object",
+     *                  ref="#/components/schemas/NewsDetailsResource"
+     *              )
+     *         )
+     *    ),
+     *   @OA\Response(
+     *       response=404,
+     *      description="Resource not found",
+     *     @OA\JsonContent(ref="#/components/schemas/ErrorResponse")
+     *  )
+     * )
+     */
+    public function getNews(News $news){
+        return $this->successResponse('News Fetched Successfully',NewsDetailsResource::make($news));
+    }
 }

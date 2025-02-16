@@ -402,6 +402,59 @@
                 ]
             }
         },
+        "/news/{news}": {
+            "get": {
+                "tags": [
+                    "News"
+                ],
+                "summary": "Get News",
+                "description": "Get a single news from the database",
+                "operationId": "getNews",
+                "parameters": [
+                    {
+                        "name": "news",
+                        "in": "path",
+                        "description": "ID of the news",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "News Fetched Successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/NewsDetailsResource"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Resource not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
         "/api/v1/preferences/set": {
             "post": {
                 "tags": [
@@ -644,9 +697,9 @@
                 },
                 "type": "object"
             },
-            "NewsResource": {
-                "title": "NewsResource",
-                "description": "News Resource",
+            "NewsDetailsResource": {
+                "title": "NewsDetailsResource",
+                "description": "News Details Resource",
                 "properties": {
                     "id": {
                         "description": "ID of the News",
@@ -678,10 +731,47 @@
                         "type": "string",
                         "example": "https://example.com"
                     },
+                    "author": {
+                        "description": "Author of the News",
+                        "type": "string",
+                        "example": "John Doe"
+                    },
                     "url_to_image": {
                         "description": "URL to Image of the News",
                         "type": "string",
                         "example": "https://example.com/image.jpg"
+                    },
+                    "published_at": {
+                        "description": "Published At of the News",
+                        "type": "string",
+                        "example": "2021-01-01 00:00:00"
+                    }
+                },
+                "type": "object"
+            },
+            "NewsResource": {
+                "title": "NewsResource",
+                "description": "News Resource",
+                "properties": {
+                    "id": {
+                        "description": "ID of the News",
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "source": {
+                        "description": "Source of the News",
+                        "type": "string",
+                        "example": "BBC"
+                    },
+                    "category": {
+                        "description": "Category of the News",
+                        "type": "string",
+                        "example": "Technology"
+                    },
+                    "title": {
+                        "description": "Title of the News",
+                        "type": "string",
+                        "example": "The title of the news"
                     },
                     "published_at": {
                         "description": "Published At of the News",
