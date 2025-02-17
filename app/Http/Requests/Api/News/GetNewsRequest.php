@@ -34,7 +34,7 @@ class GetNewsRequest extends FormRequest
             'category.*' => 'integer|exists:categories,id',
             'source' => 'nullable|array',
             'source.*' => 'integer|exists:sources,id',
-            'date' => 'nullable|date'
+            'date' => 'nullable|date|date_format:Y-m-d',
         ];
     }
     public function failedValidation(Validator $validator)

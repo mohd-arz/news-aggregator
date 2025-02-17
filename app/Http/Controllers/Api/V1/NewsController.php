@@ -11,6 +11,7 @@ use App\Models\News;
 use App\Services\Api\NewsStrategy\NewsApiService;
 use App\Trait\PaginationTrait;
 use App\Trait\ResponseTrait;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Support\Facades\Cache;
@@ -259,7 +260,7 @@ class NewsController extends Controller
      * )
      */
 
-    public function ForYou(Request $request)
+    public function ForYou(GetNewsRequest $request)
     {
         try {
             $no_of_items = $request->query('per_page', 10);
@@ -348,14 +349,16 @@ class NewsController extends Controller
         $date = $request->query('date');
         $category = $request->query('category');
         $source = $request->query('source');
+        $startOfDay = Carbon::parse($date)->startOfDay();
+        $endOfDay = Carbon::parse($date)->endOfDay();
 
         $news = $news->where(function ($query) use ($q) {
             return $query->where('title', 'like', "%$q%")
                 ->orWhere('description', 'like', "%$q%")
                 ->orWhere('body', 'like', "%$q%");
             })
-            ->when($date, function ($query) use ($date) {
-                return $query->whereDate('published_at', $date);
+            ->when($date, function ($query) use ($startOfDay, $endOfDay) {
+                return $query->whereBetween('published_at', [$startOfDay, $endOfDay]);
             })->when($category, function ($query) use ($category) {
                 return $query->whereIn('category_id', $category);
             })->when($source, function ($query) use ($source) {
