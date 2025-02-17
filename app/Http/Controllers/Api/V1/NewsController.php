@@ -13,6 +13,7 @@ use App\Trait\PaginationTrait;
 use App\Trait\ResponseTrait;
 use Illuminate\Http\Request;
 use Illuminate\Contracts\Auth\Guard;
+use Illuminate\Support\Facades\Cache;
 
 class NewsController extends Controller
 {
@@ -123,6 +124,7 @@ class NewsController extends Controller
     {
         try {
             $no_of_items = $request->query('per_page', 10);
+            $page = $request->query('page', 1);
 
             $search = $request->query('search', false);
 
@@ -130,11 +132,18 @@ class NewsController extends Controller
 
             if ($search) {
                 $news = $this->Searchable($news, $request);
+                $news = $news->with(['source', 'category'])
+                    ->orderBy('published_at', 'desc')
+                    ->paginate($no_of_items);
+            } else {
+                $cacheKey = "news_page_{$no_of_items}_{$page}";
+                
+                $news = Cache::tags(['news'])->remember($cacheKey, now()->addHour(), function () use ($news, $no_of_items) {
+                    return $news->with(['source', 'category'])
+                        ->orderBy('published_at', 'desc')
+                        ->paginate($no_of_items);
+                });
             }
-
-            $news = $news->with(['source', 'category'])
-                ->orderBy('published_at', 'desc')
-                ->paginate($no_of_items);
 
             return $this->successResponse(
                 'News Fetched Successfully',
@@ -157,7 +166,7 @@ class NewsController extends Controller
      *     summary="Get News For You",
      *     description="Get prefferenced news from the database",
      *     security={{"sanctum": {}}},
-        @OA\Parameter(
+     *      @OA\Parameter(
      *         name="page",
      *         in="query",
      *         required=false,
@@ -254,6 +263,8 @@ class NewsController extends Controller
     {
         try {
             $no_of_items = $request->query('per_page', 10);
+            $page = $request->query('page', 1);
+
             $search = $request->query('search', false);
 
             /** @var Guard $auth */
@@ -271,11 +282,19 @@ class NewsController extends Controller
             
             if ($search) {
                 $news = $this->Searchable($news, $request);
+                $news = $news->with(['source', 'category', 'author'])
+                                  ->orderBy('published_at', 'desc')
+                                  ->paginate($no_of_items);
+            } else {
+                $cacheKey = "foryou_news_user_{$user->id}_page_{$no_of_items}_{$page}";
+                
+                $news = Cache::tags(['news'])->remember($cacheKey, now()->addHour(), function () use ($news, $no_of_items) {
+                    return $news->with(['source', 'category', 'author'])
+                        ->orderBy('published_at', 'desc')
+                        ->paginate($no_of_items);
+                });
             }
 
-            $news = $news->with(['source', 'category', 'author'])
-            ->orderBy('published_at', 'desc')
-                ->paginate($no_of_items);
 
             return $this->successResponse(
                 'News Fetched Successfully',

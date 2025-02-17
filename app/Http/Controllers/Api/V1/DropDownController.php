@@ -13,6 +13,7 @@ use App\Models\Preference;
 use App\Models\Source;
 use App\Trait\ResponseTrait;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class DropDownController extends Controller
 {
@@ -39,7 +40,10 @@ class DropDownController extends Controller
      */
     public function getCategories()
     {
-        $categories = Category::all();
+        $categories = Cache::remember('categories',now()->addHour(),function(){
+            return Category::all();
+        });
+
         return $this->successResponse('Categories', CategoryResource::collection($categories));
     }
 
@@ -64,7 +68,9 @@ class DropDownController extends Controller
      */
     public function getSources()
     {
-        $sources = Source::all();
+        $sources = Cache::remember('sources',now()->addHour(),function(){
+            return Source::all();
+        });
         return $this->successResponse('Sources', SourceResource::collection($sources));
     }
 
@@ -89,7 +95,9 @@ class DropDownController extends Controller
      */
     public function getAuthors()
     {
-        $authors = Author::all();
+        $authors = Cache::remember('authors',now()->addHour(),function(){
+            return Author::all();
+        });
         return $this->successResponse('Authors', AuthorResource::collection($authors));
     }
 }

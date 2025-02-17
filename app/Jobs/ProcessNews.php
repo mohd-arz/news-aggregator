@@ -9,6 +9,7 @@ use App\Models\Source;
 use Carbon\Carbon;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
 class ProcessNews implements ShouldQueue
@@ -48,8 +49,14 @@ class ProcessNews implements ShouldQueue
     {
         try {
             DB::beginTransaction();
+
+            Cache::forget('categories');
             $category = Category::firstOrCreate(['name' => $data['category'] ?? 'General']);
+
+            Cache::forget('authors');
             $author = Author::firstOrCreate(['name' => $data['author'] ?? 'Unknown']);
+
+            Cache::forget('sources');
             $source = Source::firstOrCreate(['name' => $data['source'] ?? 'Unknown']);
 
             $existingNews = News::where('url', $data['url'])
@@ -71,6 +78,7 @@ class ProcessNews implements ShouldQueue
                         'providers' => $this->provider
                     ]
                 );
+                Cache::tags(['news'])->flush();
             }
             DB::commit();
         } catch (\Exception $e) {
