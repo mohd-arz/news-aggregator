@@ -161,6 +161,90 @@
                 ]
             }
         },
+        "/api/v1/password/email": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Send Reset Link Email",
+                "description": "Send a password reset link email to the user.",
+                "operationId": "sendResetLinkEmail",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ResetMailRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Password reset link sent successfully.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/SuccessResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Unable to send reset link.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/password/reset": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Reset Password",
+                "description": "Reset user password",
+                "operationId": "reset",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ResetRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Password has been reset",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/SuccessResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid token or email",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/dropdown/categories": {
             "get": {
                 "tags": [
@@ -706,6 +790,63 @@
                         "description": "Password Confirmation",
                         "type": "string",
                         "example": "password"
+                    },
+                    "status": {
+                        "type": "boolean",
+                        "example": true
+                    }
+                },
+                "type": "object"
+            },
+            "ResetMailRequest": {
+                "title": "Reset Mail Request",
+                "description": "Schema for Reset Password Email Request",
+                "required": [
+                    "email"
+                ],
+                "properties": {
+                    "email": {
+                        "description": "User's email for password reset",
+                        "type": "string",
+                        "format": "email",
+                        "example": "example@gmail.com"
+                    },
+                    "status": {
+                        "type": "boolean",
+                        "example": true
+                    }
+                },
+                "type": "object"
+            },
+            "ResetRequest": {
+                "title": "Reset Password Request",
+                "description": "Schema for Reset Password Request",
+                "required": [
+                    "email",
+                    "password",
+                    "token"
+                ],
+                "properties": {
+                    "email": {
+                        "description": "Email of the User",
+                        "type": "string",
+                        "format": "email",
+                        "example": "example@gmail.com"
+                    },
+                    "password": {
+                        "description": "New password of the User",
+                        "type": "string",
+                        "example": "password123"
+                    },
+                    "password_confirmation": {
+                        "description": "Password Confirmation",
+                        "type": "string",
+                        "example": "password123"
+                    },
+                    "token": {
+                        "description": "Password reset token",
+                        "type": "string",
+                        "example": "abc123def456"
                     },
                     "status": {
                         "type": "boolean",
