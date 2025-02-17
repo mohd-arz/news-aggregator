@@ -59,6 +59,15 @@ services:
       - ./docker-compose/nginx:/etc/nginx/conf.d/
     networks:
       - news_aggregator_network
+  redis:
+    image: redis:alpine
+    container_name: redis_container
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    command: redis-server --save 60 1 --loglevel warning
+    networks:
+      - news_aggregator_network
 networks:
   news_aggregator_network:
     driver: bridge
