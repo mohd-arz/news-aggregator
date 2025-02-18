@@ -1,66 +1,56 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+## News Aggregator 
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+## Docker Setup instruction
 
-## About Laravel
+* docker-compose up -d --build for build the image and run it in detached mode 
+* ensure the images are running by docker-compose ps
+1 app (laravel app)
+2 db (mysql)
+3 phpmyadmin (gui for db)
+4 redis (cache driver)
+5 nginx (for serving files)
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+* every artisan command should prefix with docker-compose exec app for reflecting the command inside the container
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+* open new terminal (type)
+- mv .env.example .env
+- change DB_HOST=db (docker service name)
+- change CACHE_STORE=redis (docker service name)
+- docker-compose exec app composer install 
+- docker-compose exec app php artisan migrate
+- docker-compose exec app php artisan migrate:status (to list migratation status)
+- docker-compose exec app php artisan db:seed (seed user - test@example.com,password)
+- run docker-compose exec app php artisan app:fetch-news (directly running the command to store it onto db for first time only )
+- open new terminal (type)
+- run docker-compose exec app php artisan queue:work (for running pending queues)
 
-## Learning Laravel
+- for triggering cron for local  -> run docker-compose exec app php artisan schedule:work
+this will trigger cron every hour and fetch news and store onto local db
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+- use postman to login , get news , set preference , get preferred news
+with hostname and  prefix api/v1
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+## open api docs
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+- visit to  hostname/api/documentation to visit the full gui for the docs
+- visit to storage/api-docs.json
 
-## Laravel Sponsors
+## My Implementation
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+### Docker Implementation
+I already have some experience in docker and docker with nodejs but nodejs support server by default for handling file, so server configuration is not a big deal and ! but with PHP we need a file server to serve our file so that ive got some reference on DigitalOcean (https://www.digitalocean.com/community/tutorials/how-to-install-and-set-up-laravel-with-docker-compose-on-ubuntu-22-04) site about how php docker file should be implemented and learnt about how it is implemented after implementing faced issue with no such host! for solve this issue i went through docker github issue page and found out that docker changed their service terms in network and some isp did not resolved the issue yet so that i tried different wifi and boom it worked ! 
 
-### Premium Partners
+I chose redis as cache driver for tags support to removed the caches based on tags ! 
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+### Laravel 11 
+I've used laravel 10 and 7 in my organization and I've no hands on experience in 11, It gave some initial difficulties like adding new middleware and assigning alias is not easy as it used to be ! for example laravel usually returns error in html format but for api we need json and for that we need to have a middleware to either force inject header as application/json or return type as expectjson() and we can alias it and call it in the route service provider for api only but in laravel 11 providers also abstracted away ! I've to implemented the middleware and exception part inside the boostrap app.php
+yet it is a nice experience to going through some new that we have experience 
 
-## Contributing
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### Api free plan limitations 
 
-## Code of Conduct
+After i got this assignment, I initially experiemented news apis to how to implement the result and store it, there i came to know that each and every newsapis returns different response object so that i need to normalize it and also free plan wont extensively supports past data and we cant get more variety of data so that ive implemented the api just from the starting that ! 
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+### Future enhancement 
+For future enhancement i will have to learn more about testing and incorporate test driven development ! now i can only managed to implement test for simple apis ! and also improving newsapis response data with more and past data for the first time to populate the db ! and also find duplicate news with normalized title !
