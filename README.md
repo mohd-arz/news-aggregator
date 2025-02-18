@@ -1,56 +1,88 @@
-## News Aggregator 
+## News Aggregator  
 
-## Docker Setup instruction
+### Docker Setup Instructions  
 
-* docker-compose up -d --build for build the image and run it in detached mode 
-* ensure the images are running by docker-compose ps
-1 app (laravel app)
-2 db (mysql)
-3 phpmyadmin (gui for db)
-4 redis (cache driver)
-5 nginx (for serving files)
+- Run `docker-compose up -d --build` to build the image and run it in detached mode.  
+- Ensure the images are running using `docker-compose ps`:  
+  1. `app` (Laravel application)  
+  2. `db` (MySQL)  
+  3. `phpmyadmin` (GUI for database management)  
+  4. `redis` (Cache driver)  
+  5. `nginx` (For serving files)  
 
-* every artisan command should prefix with docker-compose exec app for reflecting the command inside the container
+- **Running Artisan Commands:**  
+  - Prefix every Artisan command with `docker-compose exec app` to execute it inside the container.  
 
+- **Setting Up the Environment:**  
+  1. Open a new terminal and run:  
+     ```sh
+     mv .env.example .env
+     ```  
+  2. Update the `.env` file for Docker
+     - Change `DB_HOST=db` (Docker service name)  
+     - Change `CACHE_STORE=redis` (Docker service name)  
+     - The rest of the file remains the same as when bootstrapping the app normally.
+  3. Install dependencies and set up the database:  
+     ```sh
+     docker-compose exec app composer install
+     docker-compose exec app php artisan migrate
+     docker-compose exec app php artisan migrate:status  # Check migration status
+     docker-compose exec app php artisan db:seed  # Seed database (User: test@example.com, Password: password)
+     ```  
+  4. Fetch and store news in the database for the first time:  
+     ```sh
+     docker-compose exec app php artisan app:fetch-news
+     ```  
+  5. Start queue worker:  
+     ```sh
+     docker-compose exec app php artisan queue:work
+     ```  
+  6. Trigger cron jobs locally to fetch news every hour:  
+     ```sh
+     docker-compose exec app php artisan schedule:work
+     ```  
 
-* open new terminal (type)
-- mv .env.example .env
-- change DB_HOST=db (docker service name)
-- change CACHE_STORE=redis (docker service name)
-- docker-compose exec app composer install 
-- docker-compose exec app php artisan migrate
-- docker-compose exec app php artisan migrate:status (to list migratation status)
-- docker-compose exec app php artisan db:seed (seed user - test@example.com,password)
-- run docker-compose exec app php artisan app:fetch-news (directly running the command to store it onto db for first time only )
-- open new terminal (type)
-- run docker-compose exec app php artisan queue:work (for running pending queues)
+- **API Testing:**  
+  - Use **Postman** to test authentication (`login`), fetch news, set preferences, and retrieve preferred news.  
+  - Base API URL: `{hostname}/api/v1`  
 
-- for triggering cron for local  -> run docker-compose exec app php artisan schedule:work
-this will trigger cron every hour and fetch news and store onto local db
+### OpenAPI Docs  
 
-- use postman to login , get news , set preference , get preferred news
-with hostname and  prefix api/v1
+- Visit `{hostname}/api/documentation` to access the full API documentation GUI.  
+- JSON documentation available at `{hostname}/storage/api-docs.json`.  
 
-## open api docs
+---
 
-- visit to  hostname/api/documentation to visit the full gui for the docs
-- visit to storage/api-docs.json
+## My Implementation  
 
-## My Implementation
+### Docker Implementation  
+I already had some experience with Docker and Docker with Node.js. Since Node.js has a built-in server for handling files, configuring a server isn't a big deal. However, with PHP, we need a dedicated file server to serve files.  
 
-### Docker Implementation
-I already have some experience in docker and docker with nodejs but nodejs support server by default for handling file, so server configuration is not a big deal and ! but with PHP we need a file server to serve our file so that ive got some reference on DigitalOcean (https://www.digitalocean.com/community/tutorials/how-to-install-and-set-up-laravel-with-docker-compose-on-ubuntu-22-04) site about how php docker file should be implemented and learnt about how it is implemented after implementing faced issue with no such host! for solve this issue i went through docker github issue page and found out that docker changed their service terms in network and some isp did not resolved the issue yet so that i tried different wifi and boom it worked ! 
+I referred to a **[DigitalOcean tutorial](https://www.digitalocean.com/community/tutorials/how-to-install-and-set-up-laravel-with-docker-compose-on-ubuntu-22-04)** to learn about setting up a Laravel Docker environment. While implementing it, I faced an issue: **"No such host!"** After troubleshooting, I found a solution on Docker’s GitHub issue page. It turns out that Docker changed its network service policies, and some ISPs haven’t resolved the issue yet. Switching to a different Wi-Fi network solved the problem.  
 
-I chose redis as cache driver for tags support to removed the caches based on tags ! 
+For caching, I chose **Redis** because it supports **tag-based cache invalidation**, allowing me to efficiently remove cache entries based on tags.  
 
-### Laravel 11 
-I've used laravel 10 and 7 in my organization and I've no hands on experience in 11, It gave some initial difficulties like adding new middleware and assigning alias is not easy as it used to be ! for example laravel usually returns error in html format but for api we need json and for that we need to have a middleware to either force inject header as application/json or return type as expectjson() and we can alias it and call it in the route service provider for api only but in laravel 11 providers also abstracted away ! I've to implemented the middleware and exception part inside the boostrap app.php
-yet it is a nice experience to going through some new that we have experience 
+### Laravel 11 Experience  
+I have used Laravel **7 and 10** in my organization but had no hands-on experience with **Laravel 11** before this project. Initially, I faced difficulties, especially with:  
+- **Middleware:** Adding new middleware and assigning aliases is not as straightforward as before.  
+- **Exception Handling:** Laravel returns errors in **HTML format by default**, but for APIs, we need **JSON responses**. In previous versions, we could create a middleware to enforce `application/json` headers or use `expectsJson()`.  
+- **Service Providers:** In Laravel 11, **providers are abstracted away**, so I had to implement middleware and exception handling directly in `bootstrap/app.php`.  
 
+Despite the challenges, it was a great learning experience, and I enjoyed exploring the changes in Laravel 11.  
 
-### Api free plan limitations 
+### API Free Plan Limitations  
+When I first received this assignment, I experimented with various **news APIs** to understand their responses. I quickly realized that:  
+1. Each API **returns different response formats**, so I had to **normalize** the data structure.  
+2. Free-tier plans have limitations:  
+   - They **don’t provide extensive past data**, making it hard to fetch historical news.  
+   - The **variety of available news is limited**.  
 
-After i got this assignment, I initially experiemented news apis to how to implement the result and store it, there i came to know that each and every newsapis returns different response object so that i need to normalize it and also free plan wont extensively supports past data and we cant get more variety of data so that ive implemented the api just from the starting that ! 
+Due to these restrictions, I designed the system to store **news from the time of first execution** to gradually build a local news archive.  
 
-### Future enhancement 
-For future enhancement i will have to learn more about testing and incorporate test driven development ! now i can only managed to implement test for simple apis ! and also improving newsapis response data with more and past data for the first time to populate the db ! and also find duplicate news with normalized title !
+### Future Enhancements  
+In the future, I aim to:  
+- **Improve Testing**: Learn more about **Test-Driven Development (TDD)** and incorporate **better test coverage** beyond simple API tests.  
+- **Enhance News Data Storage**: Improve the system to fetch and store **more past data** during the initial setup.  
+- **Detect Duplicate News**: Implement a mechanism to identify and remove duplicate news based on **normalized titles**.  
+
+---
